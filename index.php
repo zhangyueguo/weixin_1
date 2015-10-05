@@ -6,3 +6,4 @@
  foreach($arr as $v){
 	 echo $v;
  }
+ echo "<hr />";
