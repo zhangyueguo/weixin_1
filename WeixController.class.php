@@ -95,7 +95,7 @@ class WeixController extends HomeController {
 	  }
 	  else
 	  { 
-	    /*switch($postobj->Content)
+	    switch($postobj->Content)
           {
                case 1:
                   $content = "我是曰国";
@@ -108,16 +108,16 @@ class WeixController extends HomeController {
                   break;
                case 4:
                   $content = "<a href='http://www.baidu.com'>百度</a>";
-                  break;
+                  break;  
+				case 5:
+                  $content = $postobj->FromUserName.'---'.$postobj->ToUserName;
+                  break;				  
 			   default:
-                  $content = "谢谢关注我";			  
-           }*/
+                  $arr = $this->tianqi1($postobj);
+                  $content = "城市:".$arr['retData']['city']."/n天气".$arr['retData']['weather']."/n风向".$arr['retData']['WD']."气温：".$arr['retData']['temp']; 
+           }
 
-           $arr = $this->tianqi1($postobj);
-           $content = "城市:".$arr['retData']['city']."/n天气".$arr['retData']['weather']."/n风向".$arr['retData']['WD']."气温：".$arr['retData']['temp'];
-           
 	      $indexModel->responstextmeg($postobj,$content);
-
       } 
    }
    
@@ -138,9 +138,13 @@ class WeixController extends HomeController {
    
    public function getAccessToken()
    {
-	   $appid = "wx25477fb4a5fd20d8";
-	   $secret = "b9bf8fc1119a4704467aa97278c69d0a";
-	   $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$appid."&secret=".$secret;
+	   //$appid = "wx25477fb4a5fd20d8";                 //真实公众号
+	   //$appsecret = "b9bf8fc1119a4704467aa97278c69d0a";  //真实公众号
+	   
+	   $appid = "wx01cd164fb8b52399";     //测试公众号
+	   $appsecret = "9b3809b87441d30fc772e28a6183a49c";                   //测试公众号
+	   
+	   $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$appid."&secret=".$appsecret;
 	   //1.初始化
 	   $ch = curl_init();
 	   curl_setopt($ch,CURLOPT_URL,$url);
@@ -159,6 +163,7 @@ class WeixController extends HomeController {
    
     public function getWxserverIp()
    {
+	   //真实公众号的
 	   $accress = "LNwiNEfwdsWrY93KQt7v-_Hw7KU1kPznAmAVlsx_6buk9fezlZ2gLJKoG0k83vh8ZW_dul8dhDL1256RakxuobYiEodXbNlYZxAdve5pTlpQu100WKFK5q-ZCkXWQFGUOSYhAGABFL";
 	   $url = "https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token=".$accress;
 	 
@@ -254,8 +259,51 @@ class WeixController extends HomeController {
                    );   
        $return = curl_exec ( $ch );
        curl_close ( $ch );
-	   var_dump($return);
+	   //var_dump($return);
+	   return $return;
    }
+   
+   public function sendTemplateMsg()
+   {
+	   //1. 获取到 access_token
+	   $access_token = $this->getAccessToken();
+	  
+	   $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=".$access_token;
+	   //2.组装数组
+	   
+	   /* {
+           "touser":"OPENID",
+           "template_id":"ngqIpbwh8bUfcSsECmogfXcV14J0tQlEpBO27izEYtY",
+           "url":"http://weixin.qq.com/download",            
+           "data":{
+                   "first": {
+                       "value":"恭喜你购买成功！",
+                       "color":"#173177"
+                   },
+                   "keynote1":{
+                       "value":"巧克力",
+                       "color":"#173177"
+                   }
+           }
+       } */
+	   
+	   $arr = array(
+	        'touser' => "o7f44xEZLBlNn_squWO0eqEa4WGY",
+	         'template_id' =>"EmOwuVmxKit-IY5uoj1fQpoQ7tIg_NQoMohsmZ422Qs",
+			 'url' => "www.baidu.com",
+              data =>array(
+			     'name' =>array('value'=>'o2tv','color'=>"#173177"),
+				  'money'=>array('value'=>100,'color'=>"#173177"),
+				  'date' =>array('value'=>date('Y-m-d H:i:s'),'color'=>"#173177")
+			  ),			 
+	   );
+	   //3.将数组->json
+	   $postjson = json_encode($arr);
+	   //4.调用curl函数
+	   $res = $this->http_post_curl($url,$postjson);
+	   var_dump($res);
+   }
+   
    
 
 
