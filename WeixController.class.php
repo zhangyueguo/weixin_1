@@ -135,6 +135,28 @@ class WeixController extends HomeController {
 	   curl_close($ch);
 	   var_dump($output);
    }
+   public function wan_http_curl($url,$type='get',$res='json',$arr='')
+   {
+	   //1.初始化
+	   $ch = curl_init();
+	   //2.设置curl的参数
+	   curl_setopt($ch,CURLOPT_URL,$url);
+	   curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+	   if($type == 'post')
+	   {
+		   curl_setopt($ch,CURLOPT_POST,1);
+		   curl_setopt($ch,CURLOPT_POSTFIELDS,$arr);
+	   }
+	   //3.采集
+	   $output = curl_exec($ch);
+	   //4.关闭
+	   curl_close($ch);
+	   if($res == 'json')
+	   {
+		   return json_decode($output,true);
+	   }
+	   var_dump($output);
+   }
    
    public function getAccessToken()
    {
@@ -302,6 +324,38 @@ class WeixController extends HomeController {
 	   //4.调用curl函数
 	   $res = $this->http_post_curl($url,$postjson);
 	   var_dump($res);
+   }
+   //获取微信access_token
+   public function getWxaccess_token()
+   {
+	   if($_SESSION['access_token'] && $_SESSION['expire_time']>time())
+	   {
+		   return $_SESSION['access_token'];
+	   }else
+	   {
+		   $access_token = $this->getAccessToken();
+		   $_SESSION['access_token'] = $access_token;
+		   $_SESSION['expire_time'] = time()+7000;
+		   return $access_token;
+	   }
+   }
+   
+   
+   //微信自定义菜单
+   public function definedItem()
+   {
+	   $access_token = $this->getWxaccess_token();
+	   $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$access_token;
+	   
+	   $postarr = array(
+	   
+	   );
+	   
+	   $postjosn = json_decode($postarr);
+	   
+	   $res = $this->wan_http_curl($url,'post','json',$postjosn);
+	   
+	   
    }
    
    
