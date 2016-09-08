@@ -267,6 +267,7 @@ class WeixController extends HomeController {
 	     $this->http_post_curl($url,$postjosn);
 	   //2.根据tickt 生成二维码的图片
    }
+
    public function http_post_curl($url,$data)
    {
 	   $ch = curl_init();
@@ -348,14 +349,20 @@ class WeixController extends HomeController {
 	   $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$access_token;
 	   
 	   $postarr = array(
-	   
+	   	   'button' = array(
+               array('type' =>'click','name'=>'音乐','key'=>'V1001sf_1231lkjsf'),  
+               array(
+               	    'name' =>'一级菜单', 'sub_button'=>array(
+				                     array('type'=>'view','name'=>'搜索','url'=>'www.baidu.com'),
+				                     array('type'=>'view','name'=>'视频','url'=>'www.baidu.com'),
+				                     array('type'=>'click','name'=>'点赞','key'=>'V1001sf_good'),
+               	)),
+	   	    ),  
 	   );
 	   
 	   $postjosn = json_decode($postarr);
 	   
-	   $res = $this->wan_http_curl($url,'post','json',$postjosn);
-	   
-	   
+	   $res = $this->wan_http_curl($url,'post','json',$postjosn); 
    }
    
    
