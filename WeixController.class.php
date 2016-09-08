@@ -153,7 +153,13 @@ class WeixController extends HomeController {
 	   curl_close($ch);
 	   if($res == 'json')
 	   {
-		   return json_decode($output,true);
+		   if(curl_errno($ch))
+		   {
+			   var_dump(curl_errno($ch));
+		   }else{
+			   return json_decode($output,true);
+		   }
+		   
 	   }
 	   var_dump($output);
    }
@@ -345,24 +351,31 @@ class WeixController extends HomeController {
    //微信自定义菜单
    public function definedItem()
    {
-	   $access_token = $this->getWxaccess_token();
+	  
+	   header('content-type:text/html;charset=utf8');
+	   $access_token = $this->getAccessToken();
+	   //echo $access_token;
 	   $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$access_token;
 	   
 	   $postarr = array(
-	   	   'button' = array(
-               array('type' =>'click','name'=>'音乐','key'=>'V1001sf_1231lkjsf'),  
-               array(
-               	    'name' =>'一级菜单', 'sub_button'=>array(
-				                     array('type'=>'view','name'=>'搜索','url'=>'www.baidu.com'),
-				                     array('type'=>'view','name'=>'视频','url'=>'www.baidu.com'),
-				                     array('type'=>'click','name'=>'点赞','key'=>'V1001sf_good'),
-               	)),
+	   	   'button' => array(
+                   array('type' =>'click','name'=>urlencode('菜单一'),'key'=>'V1001sf_1231lkjsf'), 
+			   
+				   array(
+						'name' =>urlencode('一级菜单'), 'sub_button'=>array(
+										 array('type'=>'view','name'=>urlencode('搜索'),'url'=>'http://www.baidu.com'),
+										 array('type'=>'view','name'=>urlencode('视频'),'url'=>'http://www.baidu.com'),
+										 array('type'=>'click','name'=>urlencode('点赞'),'key'=>'V1001sf_good'),
+					                                                        ),
+					),
 	   	    ),  
 	   );
 	   
-	   $postjosn = json_decode($postarr);
+	   $postjosn = urldecode( json_encode($postarr) );
+	   //var_dump($postjosn);
 	   
 	   $res = $this->wan_http_curl($url,'post','json',$postjosn); 
+	   var_dump($res);
    }
    
    
