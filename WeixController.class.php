@@ -64,7 +64,25 @@ class WeixController extends HomeController {
              //$indexModel->responsubscribemeg($postobj);
              $indexModel->reponseMeg($postobj,$arr);
             // $indexModel->responstextmeg($postobj);
-          } 
+          }
+          //点击菜单时间推送
+          if($postobj->Event=='CLICK')
+          {
+          	if($postobj->EventKey == 'V1001sf_1231lkjsf')
+          	{
+
+             $content = "你点击了菜单一的事件";
+          	}
+          	if($postobj->EventKey == 'V1001sf_good')
+          	{
+          		$content = "你点击了 点赞 的菜单";
+          	}
+
+
+          	$indexModel->responstextmeg($postobj,$content);
+ 
+          }
+
        }
      
 	  if($postobj->MsgType=='text' && $postobj->Content=='tuwen1')
