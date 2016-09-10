@@ -378,6 +378,36 @@ class WeixController extends HomeController {
 	   var_dump($res);
    }
    
+   //群发接口
+   public function senfmsgAll()
+   {
+	   //1.获取access_token
+	   $access_token = $this->getAccessToken();
+	   //echo $access_token;
+	   //echo "<hr>";
+	   $url = "https://api.weixin.qq.com/cgi-bin/message/mass/preview?access_token=".$access_token;
+	   //2.组装群发接口数据array
+	  /*  {     
+			"touser":"OPENID",
+			"text":{           
+				   "content":"CONTENT"            
+				   },     
+			"msgtype":"text"
+		} */
+	   $arr = array(
+	        "touser" =>"o7f44xEZLBlNn_squWO0eqEa4WGY",
+			 "text" =>array("content" => "群发消息接口"),
+			 "msgtype" => "text"
+	   );
+	   //3.array->json
+	   $postjosn = json_encode($arr);
+	   //var_dump($postjosn);
+	   //echo "<hr>";
+	   //4.调用curl
+	   $res = $this->wan_http_curl($url,'post','json',$postjson);
+	   var_dump($res);
+   }
+   
    
 
 
