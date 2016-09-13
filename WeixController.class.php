@@ -407,8 +407,29 @@ class WeixController extends HomeController {
 	   $res = $this->wan_http_curl($url,'post','json',$postjson);
 	   var_dump($res);
    }
-   
-   
+
+   //网页授权接口
+   public function getBaseInfo()
+   {
+   	  //1.获取到code
+   	    $appid = "wx01cd164fb8b52399";
+   	    $redirect_uri = urlencode("http://live.jnjyzy.com/index.php?s=/home/weix/getwxcode");
+   	    $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".$appid."&redirect_uri=".$redirect_uri."&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
+   	   //$url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".$appid."&redirect_uri=".$redirect_uri."&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
+   	    header('location:'.$url);
+   }
+
+   public function getwxcode()
+   {
+      //2.获取到网页授权的access_token
+   	   $appid = "wx01cd164fb8b52399";
+   	   $secret= "9b3809b87441d30fc772e28a6183a49c";
+   	   $code = $_GET['code'];
+   	  $url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=".$appid."&secret=".$secret."&code=".$code."&grant_type=authorization_code";
+   	  //3.拉取用户的openid
+        $res = $this->wan_http_curl($url,'get');
+        var_dump($res);
+   }
 
 
 }
