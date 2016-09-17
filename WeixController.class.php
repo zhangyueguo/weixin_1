@@ -432,4 +432,59 @@ class WeixController extends HomeController {
    }
 
 
+
+   //微信分享
+   public function sharwx()
+   {
+   	//1.获取jsapi_ticket 票据
+   	$jsapi_ticket = $this->getJsApiTicket();
+
+   	$time = time();
+   	$nonceStr = $this->getRandCode();
+   	$url = "http://live.jnjyzy.com/index.php?s=/home/weix/sharwx";
+   	$signature = 'jsapi_ticket='.$jsapi_ticket.'&noncestr='.$nonceStr.'&timestamp='.$time.'&url='.$url;
+    $signature = sha1($signature);
+   	$this->assign('time',$time);
+   	$this->assign('nonceStr',$nonceStr);
+   	$this->assign('signature',$signature);
+   	$this->assign('name','张曰国');
+
+   	 $this->display();
+   }
+    
+    //获取16位随机码
+   public function getRandCode($num=16)
+   {
+   	$array = array(
+          'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+          'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+          '0','1','2','3','4','5','6','7','8','9'
+   	);
+   	$temstr = '';
+   	$max = count($array);
+   	for ($i=1; $i<=$num ; $i++) { 
+   		$key = rand(0,$max-1);
+   		$temstr .= $array[$key];
+   	}
+    return $temstr;
+   }
+
+   public function getJsApiTicket()
+   {
+   	//如果session 中 保存有效的jsapi_ticket
+   	    if ($_SESSION['jsapi_ticket_expire_time'] && $_SESSION['jsapi_ticket']) {
+   		      $jsapi_ticket = $_SESSION['jsapi_ticket'];
+	   	}else{
+	   		$access_token = $this->getAccessToken();
+		   	$url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token='.$access_token.'&type=jsapi';
+		    $res = $this->wan_http_curl($url);
+		    $jsapi_ticket = $res['ticket'];
+		    $_SESSION['jsapi_ticket'] = $jsapi_ticket;
+		    $_SESSION['jsapi_ticket_expire_time'] = time()+7000;
+	   	}
+	   	return $jsapi_ticket;
+   	
+   }
+
+
 }
